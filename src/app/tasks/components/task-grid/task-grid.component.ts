@@ -1,20 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TaskCardComponent } from '../task-card/task-card.component';
-import { Task } from '../../models/task';
-import { DUMMY_TASKS } from '../../test-data/DUMMY_TASKS';
-import { TaskList } from '../../models/task-list';
+import { NewTaskModalComponent } from '../new-task-modal/new-task-modal.component';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-task-grid',
   imports: [
-    TaskCardComponent
+    TaskCardComponent,
+    NewTaskModalComponent
   ],
   template: `
     <div class="task-grid">
-			@for (task of tasks; track task.id) {
-        <app-task-card/>
+			@for (task of tasks(); track task.id) {
+        <app-task-card [task]="task"/>
 			}
     </div>
+    <app-new-task-modal/>
   `,
   styles: `
     .task-grid {
@@ -32,6 +33,6 @@ import { TaskList } from '../../models/task-list';
   `
 })
 export class TaskGridComponent {
-  taskList: TaskList = new TaskList(DUMMY_TASKS);
-  tasks: Task[] = this.taskList.tasks();
+  private taskService = inject(TaskService);
+  tasks = this.taskService.tasks();
 }
