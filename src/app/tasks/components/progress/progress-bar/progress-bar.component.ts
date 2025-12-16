@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, effect, input } from '@angular/core';
 
 @Component({
   selector: 'app-progress-bar',
@@ -25,6 +25,13 @@ import { Component, computed, input } from '@angular/core';
   `
 })
 export class ProgressBarComponent {
+
+  constructor() {
+    effect(() => {
+      console.log('Progress percentage changed:', this.progressPercentage());
+    })
+   }
+
   progressPercentage = input.required<number>();
   progressBarWidth = computed(() => `${this.progressPercentage()}%`);
 }
