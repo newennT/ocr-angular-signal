@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TaskCardComponent } from '../task-card/task-card.component';
 import { NewTaskModalComponent } from '../new-task-modal/new-task-modal.component';
 import { TaskService } from '../../services/task.service';
+import { TaskAction } from '../../models/task-action';
 
 @Component({
   selector: 'app-task-grid',
@@ -12,7 +13,9 @@ import { TaskService } from '../../services/task.service';
   template: `
     <div class="task-grid">
 			@for (task of tasks(); track task.id) {
-        <app-task-card [task]="task"/>
+        <app-task-card [task]="task" 
+                       (taskAction)="onTaskAction(task.id, $event)" 
+                       (subtaskToggle)="onSubtaskToggle(task.id, $event)" />
 			}
     </div>
     <app-new-task-modal/>
@@ -35,4 +38,25 @@ import { TaskService } from '../../services/task.service';
 export class TaskGridComponent {
   private taskService = inject(TaskService);
   tasks = this.taskService.tasks();
+
+  onTaskAction(id: string, action: TaskAction) {
+    switch (action) {
+      case 'complete':
+        this.taskService.completeTask(id);
+        break;
+      case 'cancel':
+        this.taskService.uncompleteTask(id);
+        break;
+      case 'delete':
+        this.taskService.deleteTask(id);
+        break;
+    }
+  }
+
+
+  onSubtaskToggle(id: string, subtaskToggle: { title: string; checked: boolean }) {
+    subtaskToggle.checked ?
+      this.taskService.completeSubtask(id, subtaskToggle.title) :
+      this.taskService.uncompleteSubtask(id, subtaskToggle.title);
+  }
 }
